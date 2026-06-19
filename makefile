@@ -15,6 +15,10 @@ test:
 test-verbose:
 	cd $(ORDER_SVC) && go test -v ./...
 
+
+test-benchmark:
+	cd $(ORDER_SVC) && go test -bench=. ./...
+
 # Dev
 run:
 	cd $(ORDER_SVC) && go run ./cmd/server
@@ -37,4 +41,4 @@ build-all:
 clean:
 	rm -rf bin/
 
-.PHONY: build-check build build-all test test-verbose run tidy tidy-all lint clean
+.PHONY: build-check build build-all test test-verbose test-benchmark run tidy tidy-all lint clean
