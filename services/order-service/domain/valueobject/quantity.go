@@ -1,13 +1,21 @@
 package valueobject
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+
+	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/errors"
+)
 
 type Quantity struct {
 	value int64
 }
 
-func NewQuantity(value int64) Quantity {
-	return Quantity{value: value}
+func NewQuantity(value int64) (Quantity, error) {
+	if value <= 0 {
+		return Quantity{}, errors.ErrInvalidQuantity
+	}
+	return Quantity{value: value}, nil
 }
 
 func (q Quantity) Value() int64 {
@@ -15,16 +23,22 @@ func (q Quantity) Value() int64 {
 }
 
 func (q Quantity) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf("%d", q.value)), nil
+	return []byte(fmt.Sprintf(`{"value": %d}`, q.value)), nil
 }
 
 func (q *Quantity) UnmarshalJSON(data []byte) error {
-	var value int64
-	_, err := fmt.Sscanf(string(data), "%d", &value)
-	if err != nil {
+	var quantity struct {
+		Value int64 `json:"value"`
+	}
+
+	if err := json.Unmarshal(data, &quantity); err != nil {
 		return err
 	}
 
-	q.value = value
+	if quantity.Value <= 0 {
+		return errors.ErrInvalidQuantity
+	}
+
+	q.value = quantity.Value
 	return nil
 }
