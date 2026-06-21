@@ -1,0 +1,4 @@
+github.com/FranciscoHonorat/ordemflow/shared v0.0.0-20260619192135-a8d38c1b9aef h1:YUhl4irrroLZwZ6UdQF+ix079147ikhsKi5ya8WfpYI=
+github.com/FranciscoHonorat/ordemflow/shared v0.0.0-20260619192135-a8d38c1b9aef/go.mod h1:CYieOH/bezEjtY2bjCWEP6FZY3ZEXnEt2XzYKm/nBPQ=
+github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
+github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=

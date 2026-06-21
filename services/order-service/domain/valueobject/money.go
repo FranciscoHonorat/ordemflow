@@ -47,6 +47,22 @@ func (m Money) String() string {
 	return fmt.Sprintf("%d %s", m.amount, m.currency)
 }
 
+func (m Money) Multiply(quantity int64) (Money, error) {
+	if quantity <= 0 {
+		return Money{}, errors.ErrInvalidQuantity
+	}
+	if m.amount <= 0 {
+		return Money{}, errors.ErrInvalidAmount
+	}
+	if !validCurrencies[m.currency] {
+		return Money{}, errors.ErrInvalidCurrency
+	}
+	return Money{
+		amount:   m.amount * quantity,
+		currency: m.currency,
+	}, nil
+}
+
 func (m Money) MarshalJSON() ([]byte, error) {
 	return []byte(fmt.Sprintf(`{"amount": %d, "currency": "%s"}`, m.amount, m.currency)), nil
 }

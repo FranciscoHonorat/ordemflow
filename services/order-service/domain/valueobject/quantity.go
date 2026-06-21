@@ -22,6 +22,10 @@ func (q Quantity) Value() int64 {
 	return q.value
 }
 
+func (q Quantity) Equal(o Quantity) bool {
+	return q.value == o.value
+}
+
 func (q Quantity) MarshalJSON() ([]byte, error) {
 	return []byte(fmt.Sprintf(`{"value": %d}`, q.value)), nil
 }

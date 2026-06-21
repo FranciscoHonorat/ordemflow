@@ -11,15 +11,15 @@ import (
 var cepRegex = regexp.MustCompile(`^\d{8}$`)
 
 type Address struct {
-	CEP            string
-	Street         string
-	Neighborhood   string
-	Number         int64
-	ReferencePoint string
-	Complement     string
+	cep            string
+	street         string
+	neighborhood   string
+	number         int64
+	referencePoint string
+	complement     string
 }
 
-func NewAddrees(CEP string, Number int64, Street, Neighborhood, ReferencePoint, Complement string) (Address, error) {
+func NewAddress(CEP string, Number int64, Street, Neighborhood, ReferencePoint, Complement string) (Address, error) {
 	if !cepRegex.MatchString(CEP) {
 		return Address{}, errors.ErrInvalidCEP
 	}
@@ -37,17 +37,17 @@ func NewAddrees(CEP string, Number int64, Street, Neighborhood, ReferencePoint, 
 	}
 
 	return Address{
-		CEP:            CEP,
-		Street:         Street,
-		Neighborhood:   Neighborhood,
-		Number:         Number,
-		ReferencePoint: ReferencePoint,
-		Complement:     Complement,
+		cep:            CEP,
+		street:         Street,
+		neighborhood:   Neighborhood,
+		number:         Number,
+		referencePoint: ReferencePoint,
+		complement:     Complement,
 	}, nil
 }
 
 func (a Address) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf(`{"cep": "%s", "street": "%s", "neighborhood": "%s", "number": %d, "referencePoint": "%s", "complement": "%s"}`, a.CEP, a.Street, a.Neighborhood, a.Number, a.ReferencePoint, a.Complement)), nil
+	return []byte(fmt.Sprintf(`{"cep": "%s", "street": "%s", "neighborhood": "%s", "number": %d, "referencePoint": "%s", "complement": "%s"}`, a.cep, a.street, a.neighborhood, a.number, a.referencePoint, a.complement)), nil
 }
 
 func (a *Address) UnmarshalJSON(data []byte) error {
@@ -80,11 +80,11 @@ func (a *Address) UnmarshalJSON(data []byte) error {
 		return errors.ErrInvalidNumber
 	}
 
-	a.CEP = address.CEP
-	a.Street = address.Street
-	a.Neighborhood = address.Neighborhood
-	a.Number = address.Number
-	a.ReferencePoint = address.ReferencePoint
-	a.Complement = address.Complement
+	a.cep = address.CEP
+	a.street = address.Street
+	a.neighborhood = address.Neighborhood
+	a.number = address.Number
+	a.referencePoint = address.ReferencePoint
+	a.complement = address.Complement
 	return nil
 }

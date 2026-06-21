@@ -1,29 +1,69 @@
 package entity
 
 import (
+	"fmt"
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/errors"
+	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/valueobject"
 )
 
 type Order struct {
-	ID        uuid.UUID
-	Value     int64
-	Itens     int64
-	Address   string
-	Status    string
-	CreatedAt time.Time
-	UpdateAt  time.Time
+	id         valueobject.OrderID
+	customerID valueobject.CustomerID
+	totalPrice valueobject.Money
+	items      []valueobject.OrderItem
+	address    valueobject.Address
+	status     valueobject.OrderStatus
+	createdAt  time.Time
+	updatedAt  time.Time
 }
 
-func NewOrder(ID uuid.UUID, Value, Itens int64, Address, Status string) (Order, error) {
-	return Order{
-		ID:        ID,
-		Value:     Value,
-		Itens:     Itens,
-		Address:   Address,
-		Status:    Status,
-		CreatedAt: time.Time{},
-		UpdateAt:  time.Time{},
-	}, nil
+func NewOrder(id valueobject.OrderID, customerID valueobject.CustomerID) *Order {
+	return &Order{
+		id:         id,
+		customerID: customerID,
+		items:      []valueobject.OrderItem{},
+		status:     valueobject.OrderStatusPending,
+		createdAt:  time.Now(),
+		updatedAt:  time.Now(),
+	}
+}
+
+func (o *Order) recalculateTotal() error {
+	var totalCents int64
+	currency := "BRL"
+
+	for _, item := range o.items {
+		sub, err := item.SubTotal()
+		if err != nil {
+			return fmt.Errorf("recalculate total: %w", err)
+		}
+		totalCents += sub.Amount()
+		currency = sub.Currency()
+	}
+
+	newTotal, err := valueobject.NewMoney(totalCents, currency)
+	if err != nil {
+		return fmt.Errorf("recalculate total: %w", err)
+	}
+
+	o.totalPrice = newTotal
+	return nil
+}
+
+func (o *Order) AddItem(item valueobject.OrderItem) error {
+	if o.status != valueobject.OrderStatusPending {
+		return errors.ErrInvalidStatus
+	}
+
+	previousItem := o.items
+
+	o.items = append(o.items, item)
+	if err := o.recalculateTotal(); err != nil {
+		o.items = previousItem
+		return fmt.Errorf("add item: %w", err)
+	}
+	o.updatedAt = time.Now()
+	return nil
 }
