@@ -32,7 +32,12 @@ func (c CustomerID) Equal(o CustomerID) bool {
 }
 
 func (c CustomerID) MarshalJSON() ([]byte, error) {
-	return []byte(`{"id": "` + c.id.String() + `"}`), nil
+	auxCustomer := struct {
+		ID string `json:"id"`
+	}{
+		ID: c.id.String(),
+	}
+	return json.Marshal(auxCustomer)
 }
 
 func (c *CustomerID) UnmarshalJSON(data []byte) error {

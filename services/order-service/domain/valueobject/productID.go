@@ -2,7 +2,6 @@ package valueobject
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/errors"
 	"github.com/google/uuid"
@@ -32,7 +31,12 @@ func (p ProductID) Equal(o ProductID) bool {
 }
 
 func (p ProductID) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf(`{"id": "%s"}`, p.id.String())), nil
+	auxProduct := struct {
+		ID string `json:"id"`
+	}{
+		ID: p.id.String(),
+	}
+	return json.Marshal(auxProduct)
 }
 
 func (p *ProductID) UnmarshalJSON(data []byte) error {

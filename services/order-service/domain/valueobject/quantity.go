@@ -2,7 +2,6 @@ package valueobject
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/errors"
 )
@@ -27,7 +26,12 @@ func (q Quantity) Equal(o Quantity) bool {
 }
 
 func (q Quantity) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf(`{"value": %d}`, q.value)), nil
+	auxQuantity := struct {
+		Value int64 `json:"value"`
+	}{
+		Value: q.value,
+	}
+	return json.Marshal(auxQuantity)
 }
 
 func (q *Quantity) UnmarshalJSON(data []byte) error {

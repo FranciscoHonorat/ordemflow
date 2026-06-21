@@ -2,7 +2,6 @@ package valueobject
 
 import (
 	"encoding/json"
-	"fmt"
 	"regexp"
 
 	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/errors"
@@ -47,7 +46,22 @@ func NewAddress(CEP string, Number int64, Street, Neighborhood, ReferencePoint, 
 }
 
 func (a Address) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf(`{"cep": "%s", "street": "%s", "neighborhood": "%s", "number": %d, "referencePoint": "%s", "complement": "%s"}`, a.cep, a.street, a.neighborhood, a.number, a.referencePoint, a.complement)), nil
+	auxAddress := struct {
+		CEP            string `json:"cep"`
+		Street         string `json:"street"`
+		Neighborhood   string `json:"neighborhood"`
+		Number         int64  `json:"number"`
+		ReferencePoint string `json:"referencePoint"`
+		Complement     string `json:"complement"`
+	}{
+		CEP:            a.cep,
+		Street:         a.street,
+		Neighborhood:   a.neighborhood,
+		Number:         a.number,
+		ReferencePoint: a.referencePoint,
+		Complement:     a.complement,
+	}
+	return json.Marshal(auxAddress)
 }
 
 func (a *Address) UnmarshalJSON(data []byte) error {

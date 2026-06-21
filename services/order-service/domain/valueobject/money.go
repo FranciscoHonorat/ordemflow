@@ -64,7 +64,14 @@ func (m Money) Multiply(quantity int64) (Money, error) {
 }
 
 func (m Money) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf(`{"amount": %d, "currency": "%s"}`, m.amount, m.currency)), nil
+	auxMoney := struct {
+		Amount   int64  `json:"amount"`
+		Currency string `json:"currency"`
+	}{
+		Amount:   m.amount,
+		Currency: m.currency,
+	}
+	return json.Marshal(auxMoney)
 }
 
 func (m *Money) UnmarshalJSON(data []byte) error {
