@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"regexp"
 
-	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/errors"
+	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/domainErrors"
 )
 
 var cepRegex = regexp.MustCompile(`^\d{8}$`)
@@ -18,21 +18,29 @@ type Address struct {
 	complement     string
 }
 
-func NewAddress(CEP string, Number int64, Street, Neighborhood, ReferencePoint, Complement string) (Address, error) {
+func NewAddress(CEP, Street, Neighborhood string, Number int64, ReferencePoint, Complement string) (Address, error) {
 	if !cepRegex.MatchString(CEP) {
-		return Address{}, errors.ErrInvalidCEP
+		return Address{}, domainErrors.ErrInvalidCEP
 	}
 
 	if Street == "" {
-		return Address{}, errors.ErrFieldEmpty
+		return Address{}, domainErrors.ErrFieldEmpty
 	}
 
 	if Neighborhood == "" {
-		return Address{}, errors.ErrFieldEmpty
+		return Address{}, domainErrors.ErrFieldEmpty
 	}
 
 	if Number <= 0 {
-		return Address{}, errors.ErrInvalidNumber
+		return Address{}, domainErrors.ErrInvalidNumber
+	}
+
+	if ReferencePoint == "" {
+		return Address{}, domainErrors.ErrFieldEmpty
+	}
+
+	if Complement == "" {
+		return Address{}, domainErrors.ErrFieldEmpty
 	}
 
 	return Address{
@@ -43,6 +51,38 @@ func NewAddress(CEP string, Number int64, Street, Neighborhood, ReferencePoint, 
 		referencePoint: ReferencePoint,
 		complement:     Complement,
 	}, nil
+}
+
+func NewAddressMust(CEP, Street, Neighborhood string, Number int64, ReferencePoint, Complement string) Address {
+	a, err := NewAddress(CEP, Street, Neighborhood, Number, ReferencePoint, Complement)
+	if err != nil {
+		panic(err)
+	}
+	return a
+}
+
+func (a Address) Cep() string {
+	return a.cep
+}
+
+func (a Address) Street() string {
+	return a.street
+}
+
+func (a Address) Neighborhood() string {
+	return a.neighborhood
+}
+
+func (a Address) Number() int64 {
+	return a.number
+}
+
+func (a Address) ReferencePoint() string {
+	return a.referencePoint
+}
+
+func (a Address) Complement() string {
+	return a.complement
 }
 
 func (a Address) MarshalJSON() ([]byte, error) {
@@ -79,19 +119,19 @@ func (a *Address) UnmarshalJSON(data []byte) error {
 	}
 
 	if !cepRegex.MatchString(address.CEP) {
-		return errors.ErrInvalidCEP
+		return domainErrors.ErrInvalidCEP
 	}
 
 	if address.Street == "" {
-		return errors.ErrFieldEmpty
+		return domainErrors.ErrFieldEmpty
 	}
 
 	if address.Neighborhood == "" {
-		return errors.ErrFieldEmpty
+		return domainErrors.ErrFieldEmpty
 	}
 
 	if address.Number <= 0 {
-		return errors.ErrInvalidNumber
+		return domainErrors.ErrInvalidNumber
 	}
 
 	a.cep = address.CEP

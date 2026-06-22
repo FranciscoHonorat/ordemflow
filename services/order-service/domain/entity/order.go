@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/errors"
+	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/domainErrors"
 	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/valueobject"
 )
 
@@ -55,7 +55,7 @@ func (o *Order) recalculateTotal() error {
 
 func (o *Order) AddItem(item valueobject.OrderItem) error {
 	if o.status != valueobject.OrderStatusPending {
-		return errors.ErrInvalidStatus
+		return domainErrors.ErrInvalidStatus
 	}
 
 	previousItem := o.items
@@ -71,7 +71,7 @@ func (o *Order) AddItem(item valueobject.OrderItem) error {
 
 func (o *Order) UpdateStatus(newStatus valueobject.OrderStatus) error {
 	if !newStatus.IsValid() {
-		return errors.ErrInvalidStatus
+		return domainErrors.ErrInvalidStatus
 	}
 	o.status = newStatus
 	o.updatedAt = time.Now()

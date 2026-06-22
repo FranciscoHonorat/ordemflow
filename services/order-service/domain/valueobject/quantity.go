@@ -3,7 +3,7 @@ package valueobject
 import (
 	"encoding/json"
 
-	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/errors"
+	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/domainErrors"
 )
 
 type Quantity struct {
@@ -12,7 +12,7 @@ type Quantity struct {
 
 func NewQuantity(value int64) (Quantity, error) {
 	if value <= 0 {
-		return Quantity{}, errors.ErrInvalidQuantity
+		return Quantity{}, domainErrors.ErrInvalidQuantity
 	}
 	return Quantity{value: value}, nil
 }
@@ -44,7 +44,7 @@ func (q *Quantity) UnmarshalJSON(data []byte) error {
 	}
 
 	if quantity.Value <= 0 {
-		return errors.ErrInvalidQuantity
+		return domainErrors.ErrInvalidQuantity
 	}
 
 	q.value = quantity.Value

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/errors"
+	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/domainErrors"
 )
 
 var validCurrencies = map[string]bool{
@@ -19,16 +19,24 @@ type Money struct {
 
 func NewMoney(amount int64, currency string) (Money, error) {
 	if amount <= 0 {
-		return Money{}, errors.ErrNegativeAmount
+		return Money{}, domainErrors.ErrNegativeAmount
 	}
 	if !validCurrencies[currency] {
-		return Money{}, errors.ErrInvalidCurrency
+		return Money{}, domainErrors.ErrInvalidCurrency
 	}
 
 	return Money{
 		amount:   amount,
 		currency: currency,
 	}, nil
+}
+
+func NewMoneyMust(amount int64, currency string) Money {
+	m, err := NewMoney(amount, currency)
+	if err != nil {
+		panic(err)
+	}
+	return m
 }
 
 func (m Money) Amount() int64 {
@@ -49,13 +57,13 @@ func (m Money) String() string {
 
 func (m Money) Multiply(quantity int64) (Money, error) {
 	if quantity <= 0 {
-		return Money{}, errors.ErrInvalidQuantity
+		return Money{}, domainErrors.ErrInvalidQuantity
 	}
 	if m.amount <= 0 {
-		return Money{}, errors.ErrInvalidAmount
+		return Money{}, domainErrors.ErrInvalidAmount
 	}
 	if !validCurrencies[m.currency] {
-		return Money{}, errors.ErrInvalidCurrency
+		return Money{}, domainErrors.ErrInvalidCurrency
 	}
 	return Money{
 		amount:   m.amount * quantity,
@@ -85,10 +93,10 @@ func (m *Money) UnmarshalJSON(data []byte) error {
 	}
 
 	if alias.Amount <= 0 {
-		return errors.ErrNegativeAmount
+		return domainErrors.ErrNegativeAmount
 	}
 	if !validCurrencies[alias.Currency] {
-		return errors.ErrInvalidCurrency
+		return domainErrors.ErrInvalidCurrency
 	}
 
 	m.amount = alias.Amount

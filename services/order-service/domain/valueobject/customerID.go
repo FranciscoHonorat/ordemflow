@@ -3,7 +3,7 @@ package valueobject
 import (
 	"encoding/json"
 
-	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/errors"
+	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/domainErrors"
 	"github.com/google/uuid"
 )
 
@@ -13,10 +13,18 @@ type CustomerID struct {
 
 func NewCustomerID(id uuid.UUID) (CustomerID, error) {
 	if id == uuid.Nil {
-		return CustomerID{}, errors.ErrInvalidCustomerID
+		return CustomerID{}, domainErrors.ErrInvalidCustomerID
 	}
 
 	return CustomerID{id: id}, nil
+}
+
+func NewCustomerIDMust(id uuid.UUID) CustomerID {
+	m, err := NewCustomerID(id)
+	if err != nil {
+		panic(err)
+	}
+	return m
 }
 
 func (c CustomerID) ID() uuid.UUID {
@@ -50,7 +58,7 @@ func (c *CustomerID) UnmarshalJSON(data []byte) error {
 	}
 
 	if customer.ID == uuid.Nil {
-		return errors.ErrInvalidCustomerID
+		return domainErrors.ErrInvalidCustomerID
 	}
 
 	c.id = customer.ID
