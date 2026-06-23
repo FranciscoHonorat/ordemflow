@@ -18,6 +18,14 @@ func NewProductID(id uuid.UUID) (ProductID, error) {
 	return ProductID{id: id}, nil
 }
 
+func NewProductIDMust(id uuid.UUID) ProductID {
+	p, err := NewProductID(id)
+	if err != nil {
+		panic(err)
+	}
+	return p
+}
+
 func (p ProductID) ID() uuid.UUID {
 	return p.id
 }

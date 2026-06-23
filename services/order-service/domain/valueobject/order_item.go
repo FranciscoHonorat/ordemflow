@@ -13,13 +13,21 @@ type OrderItem struct {
 	createdAt time.Time
 }
 
-func NewOrderItem(productID ProductID, unitPrice Money, quantity Quantity) OrderItem {
+func NewOrderItem(productID ProductID, unitPrice Money, quantity Quantity) (OrderItem, error) {
 	return OrderItem{
 		productID: productID,
 		unitPrice: unitPrice,
 		quantity:  quantity,
 		createdAt: time.Now(),
+	}, nil
+}
+
+func NewOrderItemMust(productID ProductID, unitPrice Money, quantity Quantity) OrderItem {
+	i, err := NewOrderItem(productID, unitPrice, quantity)
+	if err != nil {
+		panic(err)
 	}
+	return i
 }
 
 func (i OrderItem) SubTotal() (Money, error) {

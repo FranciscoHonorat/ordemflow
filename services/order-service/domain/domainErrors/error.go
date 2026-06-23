@@ -17,4 +17,5 @@ var (
 	ErrInvalidCustomerID = errors.New("Invalid customer ID.")
 	ErrInvalidAmount     = errors.New("Amount must be greater than 0.")
 	ErrNewMoneyMust      = errors.New("Failed to create Money with NewMoneyMust.")
+	ErrInvalidPrice      = errors.New("Price must be greater than 0.")
 )

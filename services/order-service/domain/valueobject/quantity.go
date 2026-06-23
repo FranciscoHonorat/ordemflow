@@ -17,6 +17,14 @@ func NewQuantity(value int64) (Quantity, error) {
 	return Quantity{value: value}, nil
 }
 
+func NewQuantityMust(value int64) Quantity {
+	q, err := NewQuantity(value)
+	if err != nil {
+		panic(err)
+	}
+	return q
+}
+
 func (q Quantity) Value() int64 {
 	return q.value
 }
