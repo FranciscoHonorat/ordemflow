@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/domainErrors"
+	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/event"
 	"github.com/FranciscoHonorat/ordemflow/services/order-service/domain/valueobject"
 )
 
@@ -18,6 +19,7 @@ type Order struct {
 	status     valueobject.OrderStatus
 	createdAt  time.Time
 	updatedAt  time.Time
+	event      []event.DomainEvent
 }
 
 func NewOrder(id valueobject.OrderID, customerID valueobject.CustomerID) (*Order, error) {
@@ -90,6 +92,26 @@ func (o *Order) UpdateStatus(newStatus valueobject.OrderStatus) error {
 	o.status = newStatus
 	o.updatedAt = time.Now()
 	return nil
+}
+
+func (o *Order) Place() {
+	evt := event.NewOrderPlaced(
+		o.id.String(),
+		o.customerID.String(),
+		o.totalPrice,
+		len(o.items),
+	)
+	o.event = append(o.event, evt)
+}
+
+func (o *Order) DomainEvent() []event.DomainEvent {
+	cp := make([]event.DomainEvent, len(o.event))
+	copy(cp, o.event)
+	return cp
+}
+
+func (o *Order) ClearEvent() {
+	o.event = nil
 }
 
 func (o *Order) ID() valueobject.OrderID {
